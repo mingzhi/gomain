@@ -1,13 +1,13 @@
 package main
 
 import (
-	"bitbucket.org/mingzhi/chart/render"
-	"bitbucket.org/mingzhi/gomath/stat/desc"
-	"bitbucket.org/mingzhi/gsl/randist"
-	"bitbucket.org/mingzhi/hgt/covs"
-	"bitbucket.org/mingzhi/hgt/fwd"
 	"flag"
 	"fmt"
+	"github.com/mingzhi/chart/render"
+	"github.com/mingzhi/gomath/stat/desc"
+	"github.com/mingzhi/gsl-cgo/randist"
+	"github.com/mingzhi/hgt/covs"
+	"github.com/mingzhi/hgt/fwd"
 	"github.com/vdobler/chart"
 	"log"
 	"os"
