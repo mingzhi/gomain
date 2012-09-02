@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/mingzhi/chart/render"
 	"github.com/mingzhi/gomath/stat/desc"
-	"github.com/mingzhi/gsl-cgo/randist"
 	"github.com/mingzhi/hgt/covs"
 	"github.com/mingzhi/hgt/fwd"
 	"github.com/vdobler/chart"
@@ -53,14 +52,8 @@ func init() {
 	tnow = time.Now()
 	log.Printf("Begin at %v\n", tnow.Format("Mon Jan 2 15:04:05"))
 
-	// set random number generator
-	rng := randist.NewRNG(randist.MT19937)
-	seed := tnow.Nanosecond()
-	rng.SetSeed(seed)
-	log.Println("Set random seed:", seed)
-
 	// init population
-	pop = fwd.NewSeqPopulation(size, length, mutationRate, transferRate, fragment, rng)
+	pop = fwd.NewSeqPopulation(size, length, fragment, mutationRate, transferRate)
 	//log.Println("Population: ", pop)
 	log.Println("Population initialized.")
 
@@ -121,10 +114,10 @@ func main() {
 	stepNum := etime / stepSize
 	for i := 0; i < stepNum; i++ {
 		// simulate
-		pop.Evolute(stepSize, fwd.K2PSubstitution)
+		pop.Evolve(stepSize)
 
 		// create distance matrix
-		dmatrix := pop.GenerateDistanceMatrix(sampleSize)
+		dmatrix := pop.DistanceMatrix(sampleSize)
 		c := covs.NewCMatrix(dmatrix, sampleSize, pop.Length)
 
 		// calculate ks
