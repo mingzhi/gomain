@@ -12,6 +12,7 @@ import (
 )
 
 func main() {
+	// use all the available CPUs
 	runtime.GOMAXPROCS(runtime.NumCPU())
 
 	length := 1000
