@@ -77,12 +77,13 @@ func main() {
 	}
 
 	// draw
-	svger := render.NewSVG(fname, 2, 1, 800, 200)
+	svger := render.NewSVG(fname, 1, 2, 800, 200)
 	pl := chart.ScatterChart{Title: "KS"}
 	pl.AddDataPair("KS", ngarray, ksarray, chart.PlotStyleLines, chart.Style{Symbol: '+', SymbolColor: "#0000ff", LineStyle: chart.SolidLine})
 	svger.Plot(&pl)
 	pl = chart.ScatterChart{Title: "VarD"}
 	pl.AddDataPair("VarD", ngarray, vdarray, chart.PlotStyleLines, chart.Style{Symbol: '+', SymbolColor: "#0000ff", LineStyle: chart.SolidLine})
+	svger.Plot(&pl)
 	svger.Close()
 }
 
