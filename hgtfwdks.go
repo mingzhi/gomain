@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/mingzhi/gomath/random"
 	"github.com/mingzhi/hgt/covs"
-	"github.com/mingzhi/hgt/fwd"
+	"github.com/mingzhi/hgt/fwd1"
 	"log"
 	"math/rand"
 	"os"
@@ -30,14 +30,16 @@ func main() {
 		if err != nil {
 			log.Fatalf("Can not create file: %s, %v", ksfilestr, err)
 		}
-		pop := fwd.NewSeqPop(size, length, mutation, transfer, fragment, src)
+		pop := fwd1.NewSeqPop(size, length, mutation, transfer, fragment, src)
 		for i := 0; i < step; i++ {
-			pop.Evolve(time)
-			samples := pop.Sample(sampleSize)
-			dmatrix := fwd.GenerateDistanceMatrix(samples)
+			for t := 0; t < time; t++ {
+				pop.Evolve()
+			}
+			samples := fwd1.Sample(pop.Genomes, sampleSize)
+			dmatrix := fwd1.GenerateDistanceMatrix(samples)
 			cmatrix := covs.NewCMatrix(sampleSize, length, dmatrix)
 			ks := cmatrix.KS()
-			ksfile.WriteString(fmt.Sprintf("%d,%.10f\n", pop.NumOfGeneration, ks))
+			ksfile.WriteString(fmt.Sprintf("%d,%.10f\n", pop.NumOfGen, ks))
 		}
 		ksfile.Close()
 	}
