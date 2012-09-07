@@ -1,15 +1,14 @@
 package main
 
 import (
-	"code.google.com/p/plotinum/plot"
-	"code.google.com/p/plotinum/plotter"
-	"code.google.com/p/plotinum/vg"
 	"encoding/json"
 	"flag"
 	"fmt"
+	"github.com/mingzhi/chart/render"
 	"github.com/mingzhi/gomath/stat/desc"
 	"github.com/mingzhi/hgt/covs"
 	fwd "github.com/mingzhi/hgt/fwd1"
+	"github.com/vdobler/chart"
 	"os"
 	"runtime"
 )
@@ -87,22 +86,14 @@ func main() {
 	}
 
 	// draw
-	/*
-		svger := render.NewSVG(fname, 1, 2, 800, 200)
-		pl := chart.ScatterChart{Title: "KS"}
-		pl.AddDataPair("KS", ngarray, ksarray, chart.PlotStyleLines, chart.Style{Symbol: '+', SymbolColor: "#0000ff", LineStyle: chart.SolidLine})
-		svger.Plot(&pl)
-		pl = chart.ScatterChart{Title: "VarD"}
-		pl.AddDataPair("VarD", ngarray, vdarray, chart.PlotStyleLines, chart.Style{Symbol: '+', SymbolColor: "#0000ff", LineStyle: chart.SolidLine})
-		svger.Plot(&pl)
-		svger.Close()
-	*/
-	// create a new plot, set its title and axis label
-	p, err := plot.New()
-	if err != nil {
-		panic(err)
-	}
-	p.Title.Text = "KS"
+	svger := render.NewSVG(fname, 1, 2, 800, 200)
+	pl := chart.ScatterChart{Title: "KS"}
+	pl.AddDataPair("KS", ngarray, ksarray, chart.PlotStyleLines, chart.Style{Symbol: '+', SymbolColor: "#0000ff", LineStyle: chart.SolidLine})
+	svger.Plot(&pl)
+	pl = chart.ScatterChart{Title: "VarD"}
+	pl.AddDataPair("VarD", ngarray, vdarray, chart.PlotStyleLines, chart.Style{Symbol: '+', SymbolColor: "#0000ff", LineStyle: chart.SolidLine})
+	svger.Plot(&pl)
+	svger.Close()
 
 	// save population
 	jf, err := os.Create(fname + ".json")
