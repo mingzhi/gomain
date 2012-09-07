@@ -25,6 +25,9 @@ func main() {
 	// population size array
 	sizearray := []int{100, 1000, 10000}
 	for _, size := range sizearray {
+		// population
+		pop := fwd.NewSeqPop(size, length, mutation, transfer, fragment)
+
 		// result files
 		ksname := fmt.Sprintf("ks_size_%d.csv", size)
 		ksfile, err := os.Create(ksname)
@@ -47,9 +50,6 @@ func main() {
 		infofile.WriteString(fmt.Sprintf("Length = %d\n", pop.Length))
 		infofile.WriteString(fmt.Sprintf("Mutation = %g\n", pop.Mutation))
 
-		// population
-		pop := fwd.NewSeqPop(size, length, mutation, transfer, fragment)
-
 		// population evolve
 		for i := 0; i < numofgen; i++ {
 			pop.Evolve()
@@ -57,8 +57,8 @@ func main() {
 			dmatrix := fwd.GenerateDistanceMatrix(sample)
 			cmatrix := covs.NewCMatrix(samplesize, length, dmatrix)
 			ks, vd := cmatrix.D()
-			ksfile.WriteString(fmt.Sprintf("%d,%g\n", pop.NumOfGen, ks))
-			vdfile.WriteString(fmt.Sprintf("%d,%g\n", pop.NumOfGen, vd))
+			ksfile.WriteString(fmt.Sprintf("%g\n", ks))
+			vdfile.WriteString(fmt.Sprintf("%g\n", vd))
 		}
 
 		// close files
