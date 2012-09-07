@@ -6,12 +6,14 @@ import (
 	"fmt"
 	"github.com/mingzhi/chart/render"
 	"github.com/mingzhi/gomath/random"
+	"github.com/mingzhi/gomath/stat/desc"
 	"github.com/mingzhi/hgt/covs"
 	"github.com/mingzhi/hgt/fwd1"
 	"github.com/vdobler/chart"
 	"math/rand"
 	"os"
 	"runtime"
+	"time"
 )
 
 var (
@@ -41,7 +43,8 @@ func init() {
 	flag.Parse()
 
 	// create random source (locked)
-	src := random.NewLockedSource(rand.NewSource(1))
+	seed := time.Now().UnixNano()
+	src := random.NewLockedSource(rand.NewSource(seed))
 
 	// construct a population
 	pop = fwd1.NewSeqPop(size, length, mutation, transfer, fragment, src)
@@ -64,17 +67,24 @@ func main() {
 	// do evolution
 	for i := 0; i < ngen; i++ {
 		pop.Evolve()
-		sample := fwd1.Sample(pop.Genomes, sampleSize)
-		dmatrix := fwd1.GenerateDistanceMatrix(sample)
-		cmatrix := covs.NewCMatrix(sampleSize, pop.Length, dmatrix)
-		ks, vard := cmatrix.D()
-		f.WriteString(fmt.Sprintf("%d,%g,%g\n", pop.NumOfGen, ks, vard))
+		// we make 10 samples and average
+		ksmean := desc.NewMean()
+		vdmean := desc.NewMean()
+		for j := 0; j < 10; j++ {
+			sample := fwd1.Sample(pop.Genomes, sampleSize)
+			dmatrix := fwd1.GenerateDistanceMatrix(sample)
+			cmatrix := covs.NewCMatrix(sampleSize, pop.Length, dmatrix)
+			ks, vard := cmatrix.D()
+			ksmean.Increment(ks)
+			vdmean.Increment(vard)
+		}
+		f.WriteString(fmt.Sprintf("%d,%g,%g\n", pop.NumOfGen, ksmean.GetResult(), vdmean.GetResult()))
 		if (i+1)%1000 == 0 {
-			fmt.Println("Generation: ", pop.NumOfGen, ks, vard)
+			fmt.Println("Generation: ", pop.NumOfGen, ksmean.GetResult(), vdmean.GetResult())
 		}
 
-		ksarray = append(ksarray, ks)
-		vdarray = append(vdarray, vard)
+		ksarray = append(ksarray, ksmean.GetResult())
+		vdarray = append(vdarray, vdmean.GetResult())
 		ngarray = append(ngarray, float64(pop.NumOfGen))
 	}
 
