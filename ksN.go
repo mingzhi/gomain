@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	covs "github.com/mingzhi/hgt/covs"
-	fwd "github.com/mingzhi/hgt/fwd2"
+	fwd "github.com/mingzhi/hgt/fwd1"
 	"os"
 	"runtime"
 )
