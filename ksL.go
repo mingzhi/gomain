@@ -1,3 +1,4 @@
+// in this script, I want to determine the impact of genome length.
 package main
 
 import (
@@ -13,7 +14,7 @@ func main() {
 	runtime.GOMAXPROCS(runtime.NumCPU())
 
 	// population paramters
-	length := 1000      // genome length = 1000
+	size := 1000        // genome length = 1000
 	mutation := 0.00001 // mutation rate = 1e-5
 	transfer := 0.0     // transfer rate = 0
 	fragment := 0       // transferred length = 0
@@ -23,25 +24,25 @@ func main() {
 	numofgen := 100000
 
 	// population size array
-	sizearray := []int{100, 1000, 10000}
-	for _, size := range sizearray {
+	lenarray := []int{100, 1000, 10000}
+	for _, length := range lenarray {
 		// population
 		pop := fwd.NewSeqPop(size, length, mutation, transfer, fragment)
 
 		// result files
-		ksname := fmt.Sprintf("ks_size_%d.csv", size)
+		ksname := fmt.Sprintf("ks_length_%d.csv", length)
 		ksfile, err := os.Create(ksname)
 		if err != nil {
 			panic(err)
 		}
-		vdname := fmt.Sprintf("vd_size_%d.csv", size)
+		vdname := fmt.Sprintf("vd_length_%d.csv", length)
 		vdfile, err := os.Create(vdname)
 		if err != nil {
 			panic(err)
 		}
 
 		// info file
-		infoname := fmt.Sprintf("ks_size_%d.txt", size)
+		infoname := fmt.Sprintf("ks_length_%d.txt", length)
 		infofile, err := os.Create(infoname)
 		if err != nil {
 			panic(err)
