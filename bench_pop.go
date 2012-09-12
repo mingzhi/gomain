@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	fwd "github.com/mingzhi/hgt/fwd1"
+	fwd "github.com/mingzhi/hgt/fwd3"
 	"time"
 )
 
