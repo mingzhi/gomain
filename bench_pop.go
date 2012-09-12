@@ -10,7 +10,7 @@ func main() {
 	t0 := time.Now()
 
 	size := 1000
-	length := 1000
+	length := 10000
 	mutation := 0.001
 	transfer := 0.0
 	fragment := 0
