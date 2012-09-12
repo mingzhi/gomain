@@ -4,14 +4,16 @@ package main
 import (
 	"fmt"
 	covs "github.com/mingzhi/hgt/covs"
-	fwd "github.com/mingzhi/hgt/fwd3"
+	fwd "github.com/mingzhi/hgt/fwd4"
 	"log"
 	"math/rand"
 	"os"
+	"runtime"
 	"time"
 )
 
 func main() {
+	runtime.GOMAXPROCS(3)
 	t0 := time.Now() // start time
 	log.Printf("Start up at: %v\n", t0)
 
@@ -114,6 +116,11 @@ func main() {
 		file2.WriteString(fmt.Sprintf("%d,%g,%g\n", pop.NumOfGen, ks2, vd2))
 		file3.WriteString(fmt.Sprintf("%d,%g,%g\n", pop.NumOfGen, ks3, vd3))
 		file4.WriteString(fmt.Sprintf("%d,%g,%g\n", pop.NumOfGen, ks4, vd4))
+
+		// printing the process
+		if pop.NumOfGen%1000 == 0 {
+			fmt.Printf("Number of Generation: %d", pop.NumOfGen)
+		}
 	}
 	t1 := time.Now()
 	log.Printf("End at: %v\n", t1)
