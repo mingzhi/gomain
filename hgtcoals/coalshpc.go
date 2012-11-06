@@ -125,20 +125,6 @@ func analysis(ch chan Results) {
 	dfile.WriteString(fmt.Sprintf("#sample: %d\n", sample))
 	dfile.WriteString("#ks, vd\n")
 
-	cfile, err := os.Create(fmt.Sprintf("%s_covs.csv", prefix))
-	if err != nil {
-		panic(err)
-	}
-	defer cfile.Close()
-
-	cfile.WriteString(fmt.Sprintf("#size: %d\n", size))
-	cfile.WriteString(fmt.Sprintf("#length: %d\n", length))
-	cfile.WriteString(fmt.Sprintf("#fragment: %d\n", fragment))
-	cfile.WriteString(fmt.Sprintf("#mutation: %g\n", mutation))
-	cfile.WriteString(fmt.Sprintf("#transfer: %g\n", transfer))
-	cfile.WriteString(fmt.Sprintf("#sample: %d\n", sample))
-	cfile.WriteString("#dist, scov, rcov, xy, xsys, smxy_sd, scov_sd, rcov_sd, xy_sd, xsys_sd, smxy_sd\n")
-
 	momentArr := make([][]Moments, 5)
 	for i := 0; i < len(momentArr); i++ {
 		for j := 0; j < maxl; j++ {
@@ -160,21 +146,24 @@ func analysis(ch chan Results) {
 			momentArr[3][j].Increment(results.xsysPL[j])
 			momentArr[4][j].Increment(results.smXYPL[j])
 		}
-	}
 
-	for i := 0; i < maxl; i++ {
-		cfile.WriteString(fmt.Sprintf("%d,%g,%g,%g,%g,%g,%g,%g,%g,%g,%g\n",
-			i,
-			momentArr[0][i].Mean.GetResult(),
-			momentArr[1][i].Mean.GetResult(),
-			momentArr[2][i].Mean.GetResult(),
-			momentArr[3][i].Mean.GetResult(),
-			momentArr[4][i].Mean.GetResult(),
-			momentArr[0][i].Sd.GetResult(),
-			momentArr[1][i].Sd.GetResult(),
-			momentArr[2][i].Sd.GetResult(),
-			momentArr[3][i].Sd.GetResult(),
-			momentArr[4][i].Sd.GetResult(),
-		))
+		if (i+1)%(repeats/100) == 0 {
+			cfile, err := os.Create(fmt.Sprintf("%s_covs.csv", prefix))
+			if err != nil {
+				panic(err)
+			}
+
+			cfile.WriteString(fmt.Sprintf("#size: %d\n", size))
+			cfile.WriteString(fmt.Sprintf("#length: %d\n", length))
+			cfile.WriteString(fmt.Sprintf("#fragment: %d\n", fragment))
+			cfile.WriteString(fmt.Sprintf("#mutation: %g\n", mutation))
+			cfile.WriteString(fmt.Sprintf("#transfer: %g\n", transfer))
+			cfile.WriteString(fmt.Sprintf("#sample: %d\n", sample))
+			cfile.WriteString(fmt.Sprintf("#replicates: %d\n", i+1))
+			cfile.WriteString("#dist, scov, rcov, xy, xsys, smxy_sd, scov_sd, rcov_sd, xy_sd, xsys_sd, smxy_sd\n")
+
+			cfile.Close()
+		}
+
 	}
 }
