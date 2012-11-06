@@ -30,12 +30,15 @@ func init() {
 	flag.IntVar(&length, "genome", 10000, "genome length")
 	flag.IntVar(&fragment, "frag", 100, "fragment length (ratio)")
 	flag.IntVar(&repeats, "rep", 1000, "repeats")
-	flag.IntVar(&maxl, "maxl", 2*fragment, "maxl")
+	flag.IntVar(&maxl, "maxl", 100, "maxl")
 	flag.Float64Var(&transfer, "transfer", 1e-6, "transfer rate")
 	flag.Float64Var(&mutation, "mutation", 1e-8, "mutation rate")
 	flag.StringVar(&prefix, "prefix", "", "prefix")
 
 	flag.Parse()
+	if maxl < 2*fragment {
+		maxl = 2 * fragment
+	}
 }
 
 func main() {
