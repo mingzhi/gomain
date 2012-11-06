@@ -42,7 +42,6 @@ func main() {
 		if err != nil {
 			log.Panic(err)
 		}
-		defer f.Close()
 
 		reader := csv.NewReader(f)
 		reader.Comment = '#'
@@ -70,6 +69,8 @@ func main() {
 				momentArr[k][j].Increment(v)
 			}
 		}
+
+		f.Close()
 	}
 
 	filename := fmt.Sprintf("%s_covs.csv", path.Base(dir))
