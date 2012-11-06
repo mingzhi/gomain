@@ -6,8 +6,10 @@ import (
 	"github.com/mingzhi/gomath/stat/desc"
 	"github.com/mingzhi/hgt/coals"
 	"github.com/mingzhi/hgt/covs"
+	"math"
 	"os"
 	"runtime"
+	"time"
 )
 
 var (
@@ -38,10 +40,13 @@ func init() {
 
 func main() {
 	means := make([][]*desc.Mean, 5)
+	sds := make([][]*desc.StandardDeviation, 5)
 	for i := 0; i < 5; i++ {
 		means[i] = make([]*desc.Mean, maxl)
+		sds[i] = make([]*desc.StandardDeviation, maxl)
 		for j := 0; j < maxl; j++ {
 			means[i][j] = desc.NewMean()
+			sds[i][j] = desc.NewStandardDeviationWithBiasCorrection()
 		}
 	}
 
@@ -59,10 +64,11 @@ func main() {
 	dfile.WriteString(fmt.Sprintf("#maxl: %d\n", maxl))
 	dfile.WriteString(fmt.Sprintf("#mutation: %g\n", mutation))
 	dfile.WriteString(fmt.Sprintf("#transfer: %g\n", transfer))
-	dfile.WriteString("ks, vd\n")
+	dfile.WriteString("#ks, vd\n")
 
 	runtime.GOMAXPROCS(runtime.NumCPU())
 
+	t0 := time.Now()
 	for c := 0; c < repeats; c++ {
 		w := coals.NewWFPopulation(size, sample, length, mutation, transfer, fragment)
 		w.Seed(c)
@@ -92,9 +98,18 @@ func main() {
 			means[2][l].Increment(xyPL[l])
 			means[3][l].Increment(xsysPL[l])
 			means[4][l].Increment(smXYPL[l])
+
+			sds[0][l].Increment(scovs[l])
+			sds[1][l].Increment(rcovs[l])
+			sds[2][l].Increment(xyPL[l])
+			sds[3][l].Increment(xsysPL[l])
+			sds[4][l].Increment(smXYPL[l])
 		}
 
-		fmt.Println(c)
+		if (c+1)%(repeats/100) == 0 {
+			t1 := time.Now()
+			fmt.Printf("%d%%,%v\n", (c+1)/(repeats/100), t1.Sub(t0))
+		}
 	}
 
 	covfile, err := os.Create(prefix + "covs.csv")
@@ -111,9 +126,21 @@ func main() {
 	covfile.WriteString(fmt.Sprintf("#maxl: %d\n", maxl))
 	covfile.WriteString(fmt.Sprintf("#mutation: %g\n", mutation))
 	covfile.WriteString(fmt.Sprintf("#transfer: %g\n", transfer))
-	covfile.WriteString("#dist, scov, rcov, xy, xsys, smxy\n")
+	covfile.WriteString("#dist, scov, rcov, xy, xsys, smxy, scov_sd, rcov_sd, xy_sd, xsys_sd, smxy_sd\n")
 
 	for i := 0; i < maxl; i++ {
-		covfile.WriteString(fmt.Sprintf("%d,%g,%g,%g,%g,%g\n", i, means[0][i].GetResult(), means[1][i].GetResult(), means[2][i].GetResult(), means[3][i].GetResult(), means[4][i].GetResult()))
+		covfile.WriteString(fmt.Sprintf("%d,%g,%g,%g,%g,%g,%g,%g,%g,%g,%g\n",
+			i,
+			means[0][i].GetResult(),
+			means[1][i].GetResult(),
+			means[2][i].GetResult(),
+			means[3][i].GetResult(),
+			means[4][i].GetResult(),
+			sds[0][i].GetResult()/math.Sqrt(float64(repeats)),
+			sds[1][i].GetResult()/math.Sqrt(float64(repeats)),
+			sds[2][i].GetResult()/math.Sqrt(float64(repeats)),
+			sds[3][i].GetResult()/math.Sqrt(float64(repeats)),
+			sds[4][i].GetResult()/math.Sqrt(float64(repeats)),
+		))
 	}
 }
