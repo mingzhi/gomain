@@ -162,6 +162,21 @@ func analysis(ch chan Results) {
 			cfile.WriteString(fmt.Sprintf("#replicates: %d\n", i+1))
 			cfile.WriteString("#dist, scov, rcov, xy, xsys, smxy_sd, scov_sd, rcov_sd, xy_sd, xsys_sd, smxy_sd\n")
 
+			for j := 0; j < maxl; j++ {
+				cfile.WriteString(fmt.Sprintf("%d,%g,%g,%g,%g,%g,%g,%g,%g,%g,%g\n",
+					i,
+					momentArr[0][j].Mean.GetResult(),
+					momentArr[1][j].Mean.GetResult(),
+					momentArr[2][j].Mean.GetResult(),
+					momentArr[3][j].Mean.GetResult(),
+					momentArr[4][j].Mean.GetResult(),
+					momentArr[0][j].Sd.GetResult(),
+					momentArr[1][j].Sd.GetResult(),
+					momentArr[2][j].Sd.GetResult(),
+					momentArr[3][j].Sd.GetResult(),
+					momentArr[4][j].Sd.GetResult(),
+				))
+			}
 			cfile.Close()
 		}
 
