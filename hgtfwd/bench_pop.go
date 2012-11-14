@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	fwd "github.com/mingzhi/hgt/fwd3"
+	fwd "github.com/mingzhi/hgt/fwd"
 	"time"
 )
 
@@ -12,8 +12,8 @@ func main() {
 	size := 1000
 	length := 10000
 	mutation := 0.001
-	transfer := 0.0
-	fragment := 0
+	transfer := 0.001
+	fragment := 1000
 
 	pop := fwd.NewSeqPop(size, length, mutation, transfer, fragment)
 
