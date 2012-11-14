@@ -82,12 +82,12 @@ func simusome(begin, end int, ch chan Results) {
 		seqs := w.Fortrace()
 		diffmatrix := [][]int{}
 		sample := w.SampleSize
-		for i := 0; i < sample; i++ {
-			for j := i + 1; j < sample; j++ {
+		for j := 0; j < sample; j++ {
+			for k := j + 1; k < sample; k++ {
 				diff := []int{}
-				for k := 0; k < length; k++ {
-					if seqs[i][k] != seqs[j][k] {
-						diff = append(diff, k)
+				for h := 0; h < length; h++ {
+					if seqs[j][h] != seqs[k][h] {
+						diff = append(diff, h)
 					}
 				}
 				diffmatrix = append(diffmatrix, diff)

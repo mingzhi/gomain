@@ -41,7 +41,7 @@ type Result struct {
 
 func init() {
 	flag.IntVar(&size, "size", 1000, "population size")
-	flag.IntVar(&lens, "genome", 10000, "genome length")
+	flag.IntVar(&lens, "genome", 1000, "genome length")
 	flag.IntVar(&frag, "frag", 100, "fragment length (ratio)")
 	flag.IntVar(&reps, "reps", 1000, "repeats")
 	flag.IntVar(&maxl, "maxl", 100, "maxl")
@@ -122,7 +122,7 @@ func main() {
 
 			for j := 0; j < maxl; j++ {
 				cfile.WriteString(fmt.Sprintf("%d,%g,%g,%g,%g,%g,%g,%g,%g,%g,%g\n",
-					i,
+					j,
 					moments[0][j].Mean.GetResult(),
 					moments[1][j].Mean.GetResult(),
 					moments[2][j].Mean.GetResult(),
@@ -136,6 +136,7 @@ func main() {
 				))
 			}
 			cfile.Close()
+			log.Printf("Finish %%%d\n", (i+1)/(reps/100))
 		}
 	}
 }
