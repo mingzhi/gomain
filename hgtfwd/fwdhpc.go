@@ -106,6 +106,10 @@ func main() {
 		}
 
 		if (i+1)%(reps/100) == 0 {
+			err = dfile.Sync()
+			if err != nil {
+				log.Panic(err)
+			}
 			cfile, err := os.Create(fmt.Sprintf("%s_covs.csv", prefix))
 			if err != nil {
 				log.Panic(err)
