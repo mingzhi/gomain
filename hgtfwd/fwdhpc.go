@@ -68,7 +68,7 @@ func main() {
 		go simulateSome(b, e, ch)
 	}
 
-	dfile, err := os.Create(fmt.Sprintf("%s_d.cov", prefix))
+	dfile, err := os.Create(fmt.Sprintf("%s_d.csv", prefix))
 	if err != nil {
 		log.Panic(err)
 	}
