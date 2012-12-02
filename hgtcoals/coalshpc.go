@@ -164,7 +164,7 @@ func analysis(ch chan Results) {
 
 			for j := 0; j < maxl; j++ {
 				cfile.WriteString(fmt.Sprintf("%d,%g,%g,%g,%g,%g,%g,%g,%g,%g,%g\n",
-					i,
+					j,
 					momentArr[0][j].Mean.GetResult(),
 					momentArr[1][j].Mean.GetResult(),
 					momentArr[2][j].Mean.GetResult(),
