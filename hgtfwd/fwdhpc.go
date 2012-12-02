@@ -19,6 +19,7 @@ var (
 	maxl     int     // max l
 	frag     int     // fragment length
 	gens     int     // number of generations
+	samp     int     // number of pairs to calculate
 	mutation float64 // mutation rate
 	transfer float64 // transfer rate
 	prefix   string  // prefix
@@ -46,6 +47,7 @@ func init() {
 	flag.IntVar(&reps, "reps", 1000, "repeats")
 	flag.IntVar(&maxl, "maxl", 100, "maxl")
 	flag.IntVar(&gens, "gens", 10000, "number of generations")
+	flag.IntVar(&samp, "sample", 1000, "number of pairs to calculate")
 	flag.Float64Var(&transfer, "transfer", 1e-4, "transfer rate")
 	flag.Float64Var(&mutation, "mutation", 1e-4, "mutation rate")
 	flag.StringVar(&prefix, "prefix", "test", "prefix")
@@ -156,8 +158,7 @@ func simulateSome(b, e int, ch chan Result) {
 		seqs := sp.GetGenomes()
 
 		diffmatrix := [][]int{}
-		sample := 1000
-		for j := 0; j < sample; j++ {
+		for j := 0; j < samp; j++ {
 			a := rand.Intn(size)
 			b := rand.Intn(size)
 			for a == b {
@@ -175,7 +176,7 @@ func simulateSome(b, e int, ch chan Result) {
 			diffmatrix = append(diffmatrix, diff)
 		}
 
-		cmatrix := covs.NewCMatrix(sample, lens, diffmatrix)
+		cmatrix := covs.NewCMatrix(samp, lens, diffmatrix)
 
 		ks, vd := cmatrix.D()
 		scovs, rcovs, xyPL, xsysPL, smXYPL := cmatrix.CovCircle(maxl)
