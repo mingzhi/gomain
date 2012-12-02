@@ -82,6 +82,7 @@ func main() {
 	dfile.WriteString(fmt.Sprintf("#mutation: %g\n", mutation))
 	dfile.WriteString(fmt.Sprintf("#transfer: %g\n", transfer))
 	dfile.WriteString(fmt.Sprintf("#generations: %d\n", gens))
+	dfile.WriteString(fmt.Sprintf("#sample: %d\n", samp))
 	dfile.WriteString("#ks, vd\n")
 
 	moments := make([][]Moment, 5)
@@ -124,6 +125,7 @@ func main() {
 			cfile.WriteString(fmt.Sprintf("#transfer: %g\n", transfer))
 			cfile.WriteString(fmt.Sprintf("#generations: %d\n", gens))
 			cfile.WriteString(fmt.Sprintf("#replicates: %d\n", i+1))
+			cfile.WriteString(fmt.Sprintf("#sample: %d\n", samp))
 			cfile.WriteString("#dist, scov, rcov, xy, xsys, smxy_sd, scov_sd, rcov_sd, xy_sd, xsys_sd, smxy_sd\n")
 
 			for j := 0; j < maxl; j++ {
