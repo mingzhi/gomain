@@ -31,6 +31,7 @@ var (
 	gens     int     // total generations to sample after 10000 generation
 	prefix   string  // prefix
 	eqvGens  int     // generations to reach equiliquim
+	samp     int     // number of pairs to calculate
 )
 
 func init() {
@@ -39,11 +40,12 @@ func init() {
 	flag.IntVar(&lens, "genome", 1000, "genome length")
 	flag.IntVar(&frag, "frag", 100, "fragment length to transfer")
 	flag.IntVar(&maxl, "maxl", 200, "max distance to calculate")
-	flag.IntVar(&gens, "gens", 10000, "total generations to sample after 10000 generation")
+	flag.IntVar(&gens, "gens", 1000, "total generations to sample after 10000 generation")
 	flag.Float64Var(&transfer, "transfer", 1e-4, "transfer rate per site per generation")
 	flag.Float64Var(&mutation, "mutation", 1e-4, "mutation rate per site per generation")
 	flag.StringVar(&prefix, "prefix", "test", "prefix")
-	flag.IntVar(&eqvGens, "eqv", 100000, "generations to reach equiliquim")
+	flag.IntVar(&eqvGens, "eqv", 10000, "generations to reach equiliquim")
+	flag.IntVar(&samp, "sample", 1000, "number of pairs to calculate")
 
 	// parse flags
 	flag.Parse()
@@ -60,7 +62,7 @@ func main() {
 	// create population for simulation
 	sp := fwd.NewSeqPop(size, lens, mutation, transfer, frag)
 
-	// do 10000 generations for reaching equilibrium
+	// do eqvGens generations for reaching equilibrium
 	for i := 0; i < eqvGens; i++ {
 		sp.Evolve()
 	}
@@ -84,8 +86,7 @@ func main() {
 		seqs := sp.GetGenomes()
 
 		diffmatrix := [][]int{}
-		sample := 1000
-		for j := 0; j < sample; j++ {
+		for j := 0; j < samp; j++ {
 			a := rand.Intn(size)
 			b := rand.Intn(size)
 			for a == b {
@@ -103,9 +104,11 @@ func main() {
 			diffmatrix = append(diffmatrix, diff)
 		}
 
-		cmatrix := covs.NewCMatrix(sample, lens, diffmatrix)
+		cmatrix := covs.NewCMatrix(samp, lens, diffmatrix)
 
 		ks, vd := cmatrix.D()
+		dfile.WriteString(fmt.Sprintf("%g,%g\n", ks, vd))
+
 		scovs, rcovs, xyPL, xsysPL, smXYPL := cmatrix.CovCircle(maxl)
 
 		for j := 0; j < maxl; j++ {
@@ -148,7 +151,14 @@ func main() {
 			cfile.Close()
 			log.Printf("Finish %%%d\n", (i+1)/(gens/100))
 		}
-
-		dfile.WriteString(fmt.Sprintf("%g,%g\n", ks, vd))
 	}
+
+	// save the population for further use
+	pfile, err := os.Create(fmt.Sprintf("%s.json", prefix))
+	if err != nil {
+		log.Panic(err)
+	}
+	defer pfile.Close()
+
+	pfile.Write(sp.Json())
 }
