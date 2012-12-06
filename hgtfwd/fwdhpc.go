@@ -23,6 +23,7 @@ var (
 	mutation float64 // mutation rate
 	transfer float64 // transfer rate
 	prefix   string  // prefix
+	exptime  bool    // ExpTime scale for selection
 )
 
 type Moment struct {
@@ -51,6 +52,7 @@ func init() {
 	flag.Float64Var(&transfer, "transfer", 1e-4, "transfer rate")
 	flag.Float64Var(&mutation, "mutation", 1e-4, "mutation rate")
 	flag.StringVar(&prefix, "prefix", "test", "prefix")
+	flag.BoolVar(&exptime, "exptime", false, "Exp time for Wright-Fisher selection")
 
 	flag.Parse()
 	if maxl < 2*frag {
@@ -152,6 +154,7 @@ func main() {
 func simulateSome(b, e int, ch chan Result) {
 	for i := b; i < e; i++ {
 		sp := fwd.NewSeqPop(size, lens, mutation, transfer, frag)
+		sp.SetExpTime(exptime)
 		sp.Seed(i)
 		for j := 0; j < gens; j++ {
 			sp.Evolve()
