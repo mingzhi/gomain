@@ -53,7 +53,7 @@ func main() {
 		}
 	}
 
-	dfile, err := os.Create(prefix + "d.csv")
+	dfile, err := os.Create(prefix + "_d.csv")
 	if err != nil {
 		panic(err)
 	}
@@ -92,7 +92,7 @@ func main() {
 
 		cmatrix := covs.NewCMatrix(len(diffmatrix), length, diffmatrix)
 		ks, vd := cmatrix.D()
-		dfile.WriteString(fmt.Sprintf("%d,%g,%g\n", c+1, ks, vd))
+		dfile.WriteString(fmt.Sprintf("%g,%g\n", ks, vd))
 
 		scovs, rcovs, xyPL, xsysPL, smXYPL := cmatrix.CovCircle(maxl)
 		for l := 0; l < maxl; l++ {
@@ -112,10 +112,42 @@ func main() {
 		if (c+1)%(repeats/100) == 0 {
 			t1 := time.Now()
 			fmt.Printf("%d%%,%v\n", (c+1)/(repeats/100), t1.Sub(t0))
+			covfile, err := os.Create(prefix + "_covs.csv")
+			if err != nil {
+				fmt.Println(err)
+			}
+
+			covfile.WriteString(fmt.Sprintf("#size: %d\n", size))
+			covfile.WriteString(fmt.Sprintf("#sample: %d\n", sample))
+			covfile.WriteString(fmt.Sprintf("#length: %d\n", length))
+			covfile.WriteString(fmt.Sprintf("#fragment: %d\n", fragment))
+			covfile.WriteString(fmt.Sprintf("#repeats: %d\n", repeats))
+			covfile.WriteString(fmt.Sprintf("#maxl: %d\n", maxl))
+			covfile.WriteString(fmt.Sprintf("#mutation: %g\n", mutation))
+			covfile.WriteString(fmt.Sprintf("#transfer: %g\n", transfer))
+			covfile.WriteString("#dist, scov, rcov, xy, xsys, smxy, scov_sd, rcov_sd, xy_sd, xsys_sd, smxy_sd\n")
+
+			for i := 0; i < maxl; i++ {
+				covfile.WriteString(fmt.Sprintf("%d,%g,%g,%g,%g,%g,%g,%g,%g,%g,%g\n",
+					i,
+					means[0][i].GetResult(),
+					means[1][i].GetResult(),
+					means[2][i].GetResult(),
+					means[3][i].GetResult(),
+					means[4][i].GetResult(),
+					sds[0][i].GetResult()/math.Sqrt(float64(repeats)),
+					sds[1][i].GetResult()/math.Sqrt(float64(repeats)),
+					sds[2][i].GetResult()/math.Sqrt(float64(repeats)),
+					sds[3][i].GetResult()/math.Sqrt(float64(repeats)),
+					sds[4][i].GetResult()/math.Sqrt(float64(repeats)),
+				))
+			}
+
+			covfile.Close()
 		}
 	}
 
-	covfile, err := os.Create(prefix + "covs.csv")
+	covfile, err := os.Create(prefix + "_covs.csv")
 	if err != nil {
 		fmt.Println(err)
 	}
